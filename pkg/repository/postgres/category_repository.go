@@ -43,11 +43,11 @@ func (p CategoryRepository) GetAll() ([]entities.Category, error) {
 	return categories, nil
 }
 
-func (p CategoryRepository) GetById(id int) (*entities.Category, error) {
+func (p CategoryRepository) GetById(categoryId int) (*entities.Category, error) {
 	var category []entities.Category
 	query := fmt.Sprintf(`SELECT c.id, c.name FROM %s c WHERE c.id = $1`, CategoryTable)
 
-	if err := p.db.Select(&category, query, id); err != nil {
+	if err := p.db.Select(&category, query, categoryId); err != nil {
 		return nil, err
 	}
 
