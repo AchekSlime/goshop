@@ -11,7 +11,7 @@ import (
 func main() {
 	// создать конфиг postgres
 	cfg := repository.Config{
-		Host:     "localhost",
+		Host:     "172.18.0.1",
 		Port:     "5435",
 		DbName:   "goshop",
 		User:     "postgres",
@@ -23,6 +23,7 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	log.Println("connection to d successful")
 
 	// создать базы данных
 	productRepository := postgres.NewProductRepository(db)
@@ -30,7 +31,10 @@ func main() {
 	cartRepository := postgres.NewCartRepository(db)
 	storyRepository := postgres.NewStoryRepository(db)
 
-	//postgres.InitCategories(categoryRepository, productRepository)
+	//err = postgres.InitCategories(categoryRepository, productRepository)
+	//if err != nil {
+	//	log.Println(err)
+	//}
 
 	// создать репозиторий
 	repository := repository.Storage{
@@ -43,5 +47,8 @@ func main() {
 	// создать бота
 	bot := telegram.NewBot("5301308275:AAExkTKVknQJH8YfRfQHiukG-B8MX3vtybY", repository)
 
-	bot.Start()
+	err = bot.Start()
+	if err != nil {
+		return
+	}
 }

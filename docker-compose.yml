@@ -1,0 +1,36 @@
+version: "3.7"
+services:
+#  postgres:
+#    image: postgres
+#    restart: on-failure
+#    environment:
+#      - POSTGRES_USER=postgres
+#      - POSTGRES_PASSWORD=qwe
+#      - POSTGRES_DB=goshop
+#      - DATABASE_HOST=localhost
+#    ports:
+#      - "5435:5432"
+#    networks:
+#      - achek
+#
+##  migrate:
+##    image: migrate/migrate
+##    networks:
+##      - achek
+##    volumes:
+##      - .:/migrations
+##    command: [ "-path", "/migrations", "-database",  "postgres://postgres:qwe@achek:5435/goshop?sslmode=disable", "up"]
+##    links:
+##      - postgres
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - achek
+    ports:
+      - "8080:8080"
+networks:
+  achek:
+    driver: bridge

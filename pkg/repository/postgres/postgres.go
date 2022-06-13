@@ -31,7 +31,7 @@ func NewPostgresDb(cfg repository.Config) (*sqlx.DB, error) {
 		cfg.Password,
 	))
 	if err != nil {
-		return nil, fmt.Errorf("can't connect to postgres db")
+		return nil, fmt.Errorf(err.Error())
 	}
 	return db, nil
 }
