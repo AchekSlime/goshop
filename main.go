@@ -27,13 +27,17 @@ func main() {
 	// создать базы данных
 	productRepository := postgres.NewProductRepository(db)
 	categoryRepository := postgres.NewCategoryRepository(db)
+	cartRepository := postgres.NewCartRepository(db)
+	storyRepository := postgres.NewStoryRepository(db)
 
-	// postgres.InitCategories(categoryRepository, productRepository)
+	//postgres.InitCategories(categoryRepository, productRepository)
 
 	// создать репозиторий
 	repository := repository.Storage{
 		ProductRepositoryInterface:  productRepository,
 		CategoryRepositoryInterface: categoryRepository,
+		CartRepositoryInterface:     cartRepository,
+		StoryRepositoryInterface:    storyRepository,
 	}
 
 	// создать бота

@@ -43,9 +43,17 @@ func (p ProductRepository) GetAll() {
 	panic("implement me")
 }
 
-func (p ProductRepository) GetById(productId int) {
-	//TODO implement me
-	panic("implement me")
+func (p ProductRepository) GetById(productId int) (*entities.Product, error) {
+	var products []entities.Product
+	query := fmt.Sprintf(`SELECT p.id, p.title, p.price, p.holder_name, p.category_id FROM %s p WHERE p.id = $1`,
+		ProductTable)
+
+	if err := p.db.Select(&products, query, productId); err != nil {
+		log.Println("db: GetAfterByCategory error: " + err.Error())
+		return nil, err
+	}
+
+	return &products[0], nil
 }
 
 func (p ProductRepository) GetAfterByCategory(categoryId, productId int, limit int) ([]entities.Product, error) {

@@ -1,17 +1,24 @@
 package postgres
 
 import (
+	"bufio"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"goshop/pkg/entities"
 	"goshop/pkg/repository"
+	"io/ioutil"
 	"log"
+	"os"
 	"strconv"
+	"strings"
 )
 
 const (
-	ProductTable  = "product"
-	CategoryTable = "category"
+	ProductTable      = "product"
+	CategoryTable     = "category"
+	CartTable         = "cart"
+	StoryTable        = "story"
+	StoryProductTable = "story_product"
 )
 
 func NewPostgresDb(cfg repository.Config) (*sqlx.DB, error) {
@@ -30,7 +37,8 @@ func NewPostgresDb(cfg repository.Config) (*sqlx.DB, error) {
 }
 
 func InitCategories(categoryRepository *CategoryRepository, productRepository *ProductRepository) error {
-	names := []string{"Фитнес", "Футбол", "Баскетбол", "Волейбол", "Одежда"}
+	names := ReadDirs()
+
 	for i := 0; i < len(names); i++ {
 		category := entities.Category{
 			Name: names[i],
@@ -47,11 +55,27 @@ func InitCategories(categoryRepository *CategoryRepository, productRepository *P
 	return nil
 }
 
+func ReadDirs() []string {
+	s := make([]string, 0)
+	items, _ := ioutil.ReadDir("./images/")
+	for _, item := range items {
+		if item.IsDir() {
+			s = append(s, item.Name())
+		}
+	}
+	return s
+}
+
 func InitProducts(productRepository *ProductRepository, category *entities.Category) error {
-	for i := 0; i < 15; i++ {
+	files := ReadFiles(category.Name)
+
+	for _, v := range files {
+		itemName := strings.Split(v, ";")[0]
+		price, _ := strconv.Atoi(strings.Split(v, ";")[1])
+
 		product := entities.Product{
-			Title:      category.Name + " " + strconv.Itoa(i+1),
-			Price:      i*100 - i*25,
+			Title:      itemName,
+			Price:      price,
 			HolderName: "Stabbers",
 			CategoryId: category.Id,
 		}
@@ -64,4 +88,20 @@ func InitProducts(productRepository *ProductRepository, category *entities.Categ
 	}
 
 	return nil
+}
+
+func ReadFiles(dirName string) []string {
+	images := make([]string, 0)
+	file, err := os.Open("./images/" + dirName + "/config.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		images = append(images, scanner.Text())
+	}
+
+	return images
 }
